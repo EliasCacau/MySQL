@@ -18,3 +18,9 @@ CREATE TABLE emprestimo (numero_emprestimo CHAR(8) NOT NULL, nome_agencia VARCHA
 CREATE TABLE depositante (nome_cliente VARCHAR(60) NOT NULL, numero_conta CHAR(8), FOREIGN KEY(nome_cliente) REFERENCES cliente(nome_cliente));
 
 CREATE TABLE tomador (nome_cliente VARCHAR(60) NOT NULL, numero_emprestimo VARCHAR(8) NOT NULL, FOREIGN KEY(nome_cliente) REFERENCES cliente(nome_cliente), FOREIGN KEY(numero_emprestimo) REFERENCES emprestimo(numero_emprestimo));
+
+INSERT INTO agencia(nome_agencia, cidade_agencia, ativo) VALUES('Banco do Luiz', 'Rio Branco', 1);
+INSERT INTO agencia(nome_agencia, cidade_agencia, ativo) VALUES('Banco do Danone', 'Xapuri', 0);
+INSERT INTO agencia(nome_agencia, cidade_agencia, ativo) VALUES('Banco do Elias', 'Feijó', 1);
+
+SELECT * FROM agencia;
