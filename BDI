@@ -1,0 +1,20 @@
+CREATE TABLE agencia(nome_agencia VARCHAR(30) NOT NULL PRIMARY KEY, cidade_agencia VARCHAR(30) DEFAULT 'Rio Branco', ativo INT); -- , ativo INT CHECK(ativo in {0,1}));
+
+-- DEFAULT -> serve para colocar um valor padrão caso nao seja inserido um valor
+-- CHECK -> serve para definir o escopo da variável, caso ela tenha valores diferentes dos definidos, não aceitará
+-- NOT NULL -> não aceita valores nulos
+-- VARCAHAR -> alocação dinâmica, diferente de CHAR que aloca o tamanho definido
+
+CREATE TABLE cliente (nome_cliente VARCHAR(60) NOT NULL PRIMARY KEY, rua_cliente VARCHAR(30) NOT NULL, cidade_cliente VARCHAR(30) NOT NULL);
+
+CREATE TABLE conta (numero_conta CHAR(8) NOT NULL PRIMARY KEY, nome_agencia VARCHAR(30) NOT NULL, saldo NUMERIC(8,2), FOREIGN KEY(nome_agencia) REFERENCES agencia(nome_agencia)); -- ON DELETE CASCADE;
+-- NUMERIC ou DECIMAL -> numeric(5,3) 999999,999 e numeric(3,2) 999,99 (primeiro paramentro do é o tamanho da casa antes da casa decimal, o segundo parâmetro é o tamanho após a casa decimal)
+-- FOREING KEY -> chave estrangeira, serve para destacar uma chave primaria da tabela atual a partir de outra tabela
+-- REFERENCES -> serve para identificar de qual tabela está sendo pega a chave estrangeira (local original da chave estrangeira)
+-- ON DELETE CACADE -> remove em cascata as chaves presentes em outras tabelas, ou seja ao excluir um registro em uma tabela, um registro relacionado em outra tabela é automaticamente excluído
+
+CREATE TABLE emprestimo (numero_emprestimo CHAR(8) NOT NULL, nome_agencia VARCHAR(30) NOT NULL, quantia DECIMAL(8,2), FOREIGN KEY(nome_agencia) REFERENCES agencia(nome_agencia));
+
+CREATE TABLE depositante (nome_cliente VARCHAR(60) NOT NULL, numero_conta CHAR(8), FOREIGN KEY(nome_cliente) REFERENCES cliente(nome_cliente));
+
+CREATE TABLE tomador (nome_cliente VARCHAR(60) NOT NULL, numero_emprestimo VARCHAR(8) NOT NULL, FOREIGN KEY(nome_cliente) REFERENCES cliente(nome_cliente), FOREIGN KEY(numero_emprestimo) REFERENCES emprestimo(numero_emprestimo));
