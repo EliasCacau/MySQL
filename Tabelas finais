@@ -1,0 +1,116 @@
+CREATE TABLE agencia(nome_agencia VARCHAR(30) NOT NULL PRIMARY KEY, cidade_agencia VARCHAR(30) DEFAULT 'Rio Branco', ativo INT CHECK(ativo = 1 OR ativo =0));
+
+-- DEFAULT -> serve para colocar um valor padrão caso nao seja inserido um valor
+-- CHECK -> serve para definir o escopo da variável, caso ela tenha valores diferentes dos definidos, não aceitará
+-- NOT NULL -> não aceita valores nulos
+-- VARCAHAR -> alocação dinâmica, diferente de CHAR que aloca o tamanho definido
+
+CREATE TABLE cliente (nome_cliente VARCHAR(60) NOT NULL PRIMARY KEY, rua_cliente VARCHAR(30) NOT NULL, cidade_cliente VARCHAR(30) NOT NULL);
+
+CREATE TABLE conta (numero_conta CHAR(8) NOT NULL PRIMARY KEY, nome_agencia VARCHAR(30) NOT NULL, saldo NUMERIC(8,2), FOREIGN KEY(nome_agencia) REFERENCES agencia(nome_agencia)); -- ON DELETE CASCADE;
+-- NUMERIC ou DECIMAL -> numeric(5,3) 999999,999 e numeric(3,2) 999,99 (primeiro paramentro do é o tamanho da casa antes da casa decimal, o segundo parâmetro é o tamanho após a casa decimal)
+-- FOREING KEY -> chave estrangeira, serve para destacar uma chave primaria da tabela atual a partir de outra tabela
+-- REFERENCES -> serve para identificar de qual tabela está sendo pega a chave estrangeira (local original da chave estrangeira)
+-- ON DELETE CACADE -> remove em cascata as chaves presentes em outras tabelas, ou seja ao excluir um registro em uma tabela, um registro relacionado em outra tabela é automaticamente excluído
+
+CREATE TABLE emprestimo (numero_emprestimo CHAR(8) NOT NULL, nome_agencia VARCHAR(30) NOT NULL, quantia DECIMAL(8,2), FOREIGN KEY(nome_agencia) REFERENCES agencia(nome_agencia));
+
+CREATE TABLE depositante (nome_cliente VARCHAR(60) NOT NULL, numero_conta CHAR(8), FOREIGN KEY(nome_cliente) REFERENCES cliente(nome_cliente));
+
+CREATE TABLE tomador (nome_cliente VARCHAR(60) NOT NULL, numero_emprestimo VARCHAR(8) NOT NULL, FOREIGN KEY(nome_cliente) REFERENCES cliente(nome_cliente), FOREIGN KEY(numero_emprestimo) REFERENCES emprestimo(numero_emprestimo));
+
+INSERT INTO agencia(nome_agencia, cidade_agencia, ativo) VALUES('Banco do Luiz', 'Rio Branco', 1);
+INSERT INTO agencia(nome_agencia, cidade_agencia, ativo) VALUES('Banco do Danone', 'Xapuri', 0);
+INSERT INTO agencia(nome_agencia, cidade_agencia, ativo) VALUES('Banco do Elias', 'Feijó', 1);
+
+INSERT INTO cliente(nome_cliente, rua_cliente, cidade_cliente) VALUES('Luiz Eduardo', 'Rua Jornal', 'Rio Branco');
+INSERT INTO cliente(nome_cliente, rua_cliente, cidade_cliente) VALUES('Danone Carlos', 'Rua Dones', 'Xapuri');
+INSERT INTO cliente(nome_cliente, rua_cliente, cidade_cliente) VALUES('Elias Cacau', 'Rua Cabral', 'Feijó');
+
+INSERT INTO conta (numero_conta, nome_agencia, saldo) VALUES('12121212', 'Banco do Luiz', 5000.00);
+INSERT INTO conta (numero_conta, nome_agencia, saldo) VALUES('12121213', 'Banco do Luiz', 5000.00);
+
+INSERT INTO conta (numero_conta, nome_agencia, saldo) VALUES('13131313', 'Banco do Danone', 10000.00);
+INSERT INTO conta (numero_conta, nome_agencia, saldo) VALUES('14141414', 'Banco do Elias', 8500.00);
+
+
+INSERT INTO emprestimo(numero_emprestimo, nome_agencia, quantia) VALUES('12345678', 'Banco do Luiz', 1000.00);
+INSERT INTO emprestimo(numero_emprestimo, nome_agencia, quantia) VALUES('12345679', 'Banco do Danone', 2000.00);
+INSERT INTO emprestimo(numero_emprestimo, nome_agencia, quantia) VALUES('12345675', 'Banco do Elias', 3000.00);
+INSERT INTO emprestimo(numero_emprestimo, nome_agencia, quantia) VALUES('12345676', 'Banco do NULO', 3000.00);
+
+
+INSERT INTO depositante(nome_cliente, numero_conta) VALUES('Luiz Eduardo', '12121212');
+INSERT INTO depositante(nome_cliente, numero_conta) VALUES('Danone Carlos', '13131313');
+INSERT INTO depositante(nome_cliente, numero_conta) VALUES('Elias Cacau', '14141414');
+
+INSERT INTO tomador(nome_cliente, numero_emprestimo) VALUES('Luiz Eduardo', '12345678');
+INSERT INTO tomador(nome_cliente, numero_emprestimo) VALUES('Danone Carlos', '12345679');
+INSERT INTO tomador(nome_cliente, numero_emprestimo) VALUES('Elias Cacau', '12345675');
+INSERT INTO tomador(nome_cliente, numero_emprestimo) VALUES('Pessoa Nula', '12345673');
+
+
+
+-- SELECT * FROM emprestimo NATURAL JOIN tomador;
+
+-- Liga duas tabelas, cruzando os atributos que possuem o mesmo nome, CHAVE PRIMARIA E CHAVE ESTRANGEIRA PRECISAM ESTAR COM MESMO NOME SE NAO DA ERRO, repete
+
+-- SELECT * FROM emprestimo INNER JOIN tomador ON emprestimo.numero_emprestimo = tomador.numero_emprestimo;
+
+-- Liga duas tabelas, cruzando os atributos que possuem nomes diferentes, nao repete
+
+-- SELECT numero_conta, saldo*1.3 FROM conta
+
+-- Projeção Generalizada - permite que operações aritméticas sejam usadas na projeção
+
+-- SELECT COUNT(saldo) FROM conta
+
+-- MAX, MIN, AVG, SUM, COUNT - maximo, minimo, média, soma, conta numero de atributos
+
+-- SELECT nome_agencia, SUM(saldo) "Salude"
+-- FROM conta 
+-- GROUP BY nome_agencia
+-- HAVING Salude > 9000
+
+-- SELECT para selecionar é WHERE
+-- para o GROUP BY para selecionar é HAVING
+
+-- BANCO DE DADOS NO MYSQL
+-- Create database banco;
+-- use banco;
+-- show tables;
+-- dascribe emprestimo;
+
+-- Retornar os atributos selecionados quando a condição for satisfeita
+
+-- SELECT e.nome_agencia, t.nome_cliente, e.quantia
+-- FROM emprestimo e, tomador t
+-- WHERE e.numero_emprestimo = t.numero_emprestimo
+
+-- SELECT * 
+-- FROM emprestimo e
+-- INNER JOIN tomador t
+-- ON e.numero_emprestimo = t.numero_emprestimo;
+
+-- SELECT * 
+-- FROM emprestimo e
+-- NATURAL JOIN tomador t
+
+-- Para comparar strings utilizasse LIKE
+
+-- SELECT e.nome_agencia, t.nome_cliente, e.quantia
+-- FROM emprestimo e 
+-- LEFT JOIN tomador t
+-- ON e.numero_emprestimo = t.numero_emprestimo;
+
+-- SELECT e.nome_agencia, t.nome_cliente, e.quantia
+-- FROM emprestimo e 
+-- RIGHT JOIN tomador t
+-- ON e.numero_emprestimo = t.numero_emprestimo;
+
+-- SELECT e.nome_agencia, t.nome_cliente, e.quantia
+-- FROM emprestimo e 
+-- FULL JOIN tomador t
+-- IGUAL
+-- SELECT e.nome_agencia, t.nome_cliente, e.quantia
+-- FROM emprestimo e, tomador t;
